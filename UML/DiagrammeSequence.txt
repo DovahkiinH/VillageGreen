@@ -1,0 +1,78 @@
+@startuml
+actor Client
+participant Catalogue
+participant "Panier" as Panier
+participant "Service Client" as ServiceClient
+participant "Système de Commande" as Commande
+participant "Paiement" as Paiement
+participant "Stock" as Stock
+participant "Commercial"
+participant "Notification" as Notification
+
+== Flux principal ==
+Client -> Catalogue: Consulter le catalogue
+Catalogue --> Client: Affiche les produits
+
+Client -> Panier: Ajouter un produit au panier
+Panier -> Stock: Vérifier disponibilité produit
+Stock --> Panier: Produit disponible
+Client -> Panier: Saisir la quantité
+Panier --> Client: Produit ajouté au panier
+
+Client -> ServiceClient: Se connecter
+ServiceClient --> Client: Authentification réussie
+
+Client -> Commande: Valider la commande
+Commande -> Panier: Récupérer contenu du panier
+Panier --> Commande: Contenu du panier
+
+Commande -> Client: Saisir adresses facturation et livraison
+Client --> Commande: Valide les adresses
+
+Commande -> Paiement: Demande de paiement
+alt Client Particulier
+    Paiement -> Client: Paiement immédiat
+    Client --> Paiement: Informations de paiement
+    Paiement --> Commande: Paiement validé
+else Client Professionnel
+    Commande -> Commercial: Vérification limite de crédit
+    Commercial --> Commande: Crédit approuvé
+    Commande -> Paiement: Paiement différé accepté
+end
+
+Commande -> Stock: Réserver les produits
+Stock --> Commande: Réservation confirmée
+
+Commande -> Notification: Générer confirmation commande
+Notification --> Client: Envoi email confirmation
+
+== Flux alternatifs ==
+alt Identifiants incorrects
+    Client -> ServiceClient: Se connecter
+    ServiceClient --> Client: Échec d'authentification
+end
+
+alt Produit indisponible
+    Panier -> Stock: Vérifier disponibilité produit
+    Stock --> Panier: Produit indisponible
+    Panier --> Client: Indique rupture de stock
+end
+
+alt Adresse incorrecte
+    Commande -> Client: Valider adresses
+    Client --> Commande: Adresse incorrecte
+    Commande --> Client: Demande de correction
+end
+
+alt Paiement échoué
+    Paiement -> Client: Paiement immédiat
+    Client --> Paiement: Informations incorrectes
+    Paiement --> Commande: Paiement refusé
+    Commande --> Client: Demande autre moyen de paiement
+end
+
+alt Abandon de la commande
+    Client -> Commande: Abandon du processus
+    Commande --> Panier: Sauvegarde temporaire du panier
+end
+@enduml

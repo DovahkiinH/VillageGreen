@@ -1,0 +1,134 @@
+CREATE TABLE facture(
+   id COUNTER,
+   date_facture DATE NOT NULL,
+   ref_facture VARCHAR(255) NOT NULL,
+   PRIMARY KEY(id)
+);
+
+CREATE TABLE fournisseur(
+   id COUNTER,
+   nom VARCHAR(255) NOT NULL,
+   type VARCHAR(255) NOT NULL,
+   mail VARCHAR(255) NOT NULL,
+   telephone VARCHAR(255) NOT NULL,
+   ref_fournisseur VARCHAR(255) NOT NULL,
+   siret VARCHAR(255),
+   PRIMARY KEY(id)
+);
+
+CREATE TABLE utilisateur(
+   id COUNTER,
+   nom VARCHAR(255) NOT NULL,
+   prenom VARCHAR(255) NOT NULL,
+   telephone VARCHAR(255) NOT NULL,
+   mail VARCHAR(255) NOT NULL,
+   mot_de_passe_chiffrer_ VARCHAR(255) NOT NULL,
+   num_reference SMALLINT NOT NULL,
+   categorie LOGICAL NOT NULL,
+   siret VARCHAR(255),
+   connection DATETIME NOT NULL,
+   PRIMARY KEY(id)
+);
+
+CREATE TABLE rubrique(
+   id COUNTER,
+   libelle_court VARCHAR(255) NOT NULL,
+   libelle_long TEXT NOT NULL,
+   photo VARCHAR(255) NOT NULL,
+   PRIMARY KEY(id)
+);
+
+CREATE TABLE role(
+   id COUNTER,
+   libelle VARCHAR(255) NOT NULL,
+   niveau VARCHAR(255) NOT NULL,
+   PRIMARY KEY(id)
+);
+
+CREATE TABLE sous_rubrique(
+   id COUNTER,
+   libelle_court VARCHAR(255) NOT NULL,
+   libelle_long TEXT NOT NULL,
+   photo VARCHAR(255) NOT NULL,
+   id_1 INT NOT NULL,
+   PRIMARY KEY(id),
+   FOREIGN KEY(id_1) REFERENCES rubrique(id)
+);
+
+CREATE TABLE adresse(
+   id COUNTER,
+   rue VARCHAR(255) NOT NULL,
+   ville VARCHAR(255) NOT NULL,
+   cp VARCHAR(255) NOT NULL,
+   pays VARCHAR(255) NOT NULL,
+   status VARCHAR(255) NOT NULL,
+   id_1 INT NOT NULL,
+   id_2 INT NOT NULL,
+   PRIMARY KEY(id),
+   FOREIGN KEY(id_1) REFERENCES utilisateur(id),
+   FOREIGN KEY(id_2) REFERENCES fournisseur(id)
+);
+
+CREATE TABLE produit(
+   id COUNTER,
+   libelle_court VARCHAR(255) NOT NULL,
+   libelle_long TEXT NOT NULL,
+   ref_fournisseur VARCHAR(255) NOT NULL,
+   prix_achat CURRENCY NOT NULL,
+   photo VARCHAR(255) NOT NULL,
+   stock INT NOT NULL,
+   status VARCHAR(255) NOT NULL,
+   slug VARCHAR(255) NOT NULL,
+   id_1 INT NOT NULL,
+   id_2 INT NOT NULL,
+   PRIMARY KEY(id),
+   FOREIGN KEY(id_1) REFERENCES fournisseur(id),
+   FOREIGN KEY(id_2) REFERENCES rubrique(id)
+);
+
+CREATE TABLE commande(
+   id COUNTER,
+   date_commande DATETIME NOT NULL,
+   moyen_paiement VARCHAR(255) NOT NULL,
+   date_paiement DATETIME NOT NULL,
+   etat VARCHAR(255) NOT NULL,
+   ref_commande VARCHAR(255) NOT NULL,
+   prix_total VARCHAR(255) NOT NULL,
+   id_1 INT NOT NULL,
+   PRIMARY KEY(id),
+   FOREIGN KEY(id_1) REFERENCES utilisateur(id)
+);
+
+CREATE TABLE livraison(
+   id COUNTER,
+   date_livraison DATETIME NOT NULL,
+   ref_livraison VARCHAR(255) NOT NULL,
+   etat VARCHAR(255) NOT NULL,
+   id_1 INT NOT NULL,
+   PRIMARY KEY(id),
+   FOREIGN KEY(id_1) REFERENCES commande(id)
+);
+
+CREATE TABLE possede(
+   id INT,
+   id_1 INT,
+   PRIMARY KEY(id, id_1),
+   FOREIGN KEY(id) REFERENCES utilisateur(id),
+   FOREIGN KEY(id_1) REFERENCES role(id)
+);
+
+CREATE TABLE compose(
+   id INT,
+   id_1 INT,
+   PRIMARY KEY(id, id_1),
+   FOREIGN KEY(id) REFERENCES produit(id),
+   FOREIGN KEY(id_1) REFERENCES commande(id)
+);
+
+CREATE TABLE facturer(
+   id INT,
+   id_1 INT,
+   PRIMARY KEY(id, id_1),
+   FOREIGN KEY(id) REFERENCES commande(id),
+   FOREIGN KEY(id_1) REFERENCES facture(id)
+);

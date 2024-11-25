@@ -1,0 +1,51 @@
+@startuml
+actor "Client Particulier" as ClientP
+actor "Client Professionnel" as ClientPro
+actor "Commercial"
+actor "Équipe de gestion des fournisseurs" as Fournisseurs
+actor "Système Comptable" as Comptable
+
+usecase "Visualiser le catalogue" as UC1
+usecase "Ajouter des produits au panier" as UC2
+usecase "Saisir les quantités" as UC3
+usecase "Se connecter" as UC4
+usecase "Passer une commande" as UC5
+usecase "Valider les adresses (facturation, livraison)" as UC6
+usecase "Paiement (Particulier)" as UC7
+usecase "Paiement différé (Professionnel)" as UC8
+usecase "Gérer le catalogue" as UC9
+usecase "Gérer les rubriques et sous-rubriques" as UC10
+usecase "Éditer des documents (Factures, Bons de livraison)" as UC11
+usecase "Appliquer une réduction" as UC12
+usecase "Gérer les clients" as UC13
+usecase "Archiver les commandes et documents" as UC14
+
+ClientP --> UC1
+ClientP --> UC2
+ClientP --> UC3
+ClientP --> UC4
+ClientP --> UC5
+UC5 --> UC6
+UC6 --> UC7
+
+ClientPro --> UC1
+ClientPro --> UC2
+ClientPro --> UC3
+ClientPro --> UC4
+ClientPro --> UC5
+UC5 --> UC6
+UC5 --> UC12
+UC6 --> UC8
+
+Commercial --> UC13
+Commercial --> UC12
+Commercial --> UC11
+
+Fournisseurs --> UC9
+Fournisseurs --> UC10
+
+Comptable --> UC14
+Comptable --> UC11
+UC7 --> UC11
+UC8 --> UC11
+@enduml
